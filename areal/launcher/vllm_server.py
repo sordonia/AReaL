@@ -1,4 +1,5 @@
 import os
+import shlex
 import subprocess
 import sys
 import time
@@ -30,8 +31,11 @@ def launch_server_cmd(command: str, custom_env: dict | None = None) -> subproces
     """
     # Replace newline continuations and split the command string.
     command = command.replace("\\\n", " ").replace("\\", " ")
-    logger.info(f"Launch command: {command}")
-    parts = command.split()
+    parts = shlex.split(command)
+    logger.info(
+        "Launch command: %s",
+        " ".join(shlex.quote(part) for part in parts),
+    )
     _env = os.environ.copy()
     # To avoid DirectoryNotEmpty error caused by triton
     triton_cache_path = _env.get("TRITON_CACHE_PATH", TRITON_CACHE_PATH)

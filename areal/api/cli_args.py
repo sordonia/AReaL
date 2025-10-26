@@ -3,7 +3,7 @@ import json
 import os
 from dataclasses import asdict, dataclass, field
 from pathlib import Path
-from typing import Dict, List
+from typing import Any, Dict, List
 
 import uvloop
 import yaml
@@ -559,6 +559,7 @@ class vLLMConfig:
     # model weights are updated. Using v0.7.2 reset_prefix_cache
     # will fix this issue.
     enable_prefix_caching: bool = False
+    hf_overrides: Dict[str, Any] | None = None
     gpu_memory_utilization: float = 0.9
     worker_extension_cls: str = (
         "areal.thirdparty.vllm.vllm_worker_extension.VLLMWorkerExtension"
@@ -609,6 +610,9 @@ class vLLMConfig:
                 continue
             if v is True:
                 flags.append(f"--{k.replace('_','-')}")
+            elif isinstance(v, dict):
+                json_str = json.dumps(v, separators=(",", ":"))
+                flags.append(f"--{k.replace('_','-')} '{json_str}'")
             elif isinstance(v, list):
                 flags.append(f"--{k.replace('_','-')} {' '.join(map(str, v))}")
             else:

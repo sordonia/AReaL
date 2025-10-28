@@ -190,7 +190,7 @@ class RayLauncher:
                 bundles=device_bundles, strategy="PACK"
             )
             try:
-                ray.get(placement_group.ready(), timeout=30)
+                ray.get(placement_group.ready(), timeout=3600)
             except ray.exceptions.GetTimeoutError as e:
                 logger.error(
                     "Ray placement group timeout, please check if the resource requirement "
